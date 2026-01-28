@@ -1,0 +1,129 @@
+# KRM-style metadata for a Terraform module for a Filestore Lustre instance.
+#
+# Based on the TF Blueprint Metadata standard:
+# https://docs.google.com/document/d/1uMhNixV5RsH3s21pniLZpQDkSLS2cABh2lo1fkq2hMY/edit
+apiVersion: blueprints.cloud.google.com/v1alpha1
+kind: BlueprintMetadata
+metadata:
+  # A machine-readable name for the blueprint.
+  name: terraform-google-filestore-lustre
+  # Details about the source repository.
+  source:
+    type: git
+    git:
+      repo: https://github.com/GoogleCloudPlatform/terraform-google-filestore-lustre.git
+      dir: /
+      ref: main
+  # The current release version of the blueprint.
+  version: 0.1.0
+  # The actuation tool (Terraform) and compatible versions.
+  actuationTool:
+    type: Terraform
+    version: ">= 1.3.0"
+  # A human-readable name for the blueprint.
+  title: Filestore Lustre Instance
+  # Descriptions of the blueprint.
+  description:
+    tagline: Terraform module for creating a Google Cloud Filestore instance for Lustre.
+    detailed: This module creates and configures a Google Cloud Filestore for Lustre instance. Filestore for Lustre is a fully managed, parallel file system that provides high-performance storage for High Performance Computing (HPC) workloads. This module uses the google-beta provider as the feature is in beta.
+spec:
+  # Provides information for blueprint consumers.
+  info:
+    title: Filestore Lustre Instance
+    source:
+      repo: https://github.com/GoogleCloudPlatform/terraform-google-filestore-lustre.git
+  # Describes the contents of the blueprint.
+  content:
+    # A brief summary of the main module.
+    main:
+      readme: This Terraform module creates a Google Cloud Filestore instance for Lustre, a high-performance parallel file system.
+  # Defines the user-customizable aspects of the blueprint.
+  interfaces:
+    # Lists input variables for the blueprint.
+    variables:
+      - name: project_id
+        description: The ID of the project in which the resource belongs.
+        type: string
+        required: true
+      - name: name
+        description: The name of the Lustre instance. Must start with a letter, contain only letters, numbers, and hyphens, and be between 1 and 63 characters long.
+        type: string
+        required: false
+        default: filestore-lustre-instance
+      - name: location
+        description: The GCP zone for the Lustre instance (e.g., us-central1-a).
+        type: string
+        required: false
+        default: us-central1-a
+      - name: capacity_gib
+        description: The capacity of the Lustre instance in gibibytes (GiB). Must be a multiple of 2400 GiB. The minimum capacity is 2400 GiB.
+        type: number
+        required: false
+        default: 2400
+      - name: file_share_name
+        description: The name of the file share. Must be 16 characters or less.
+        type: string
+        required: false
+        default: lustre_share
+      - name: network_name
+        description: The name of the VPC network to which the Lustre instance is connected.
+        type: string
+        required: false
+        default: default
+      - name: connect_mode
+        description: The connection mode of the Lustre instance. The only supported value is `PRIVATE_SERVICE_ACCESS`.
+        type: string
+        required: false
+        default: PRIVATE_SERVICE_ACCESS
+      - name: labels
+        description: A map of key/value label pairs to assign to the Lustre instance.
+        type: map(string)
+        required: false
+        default: {}
+    # Groups related variables for better presentation in UIs.
+    variableGroups:
+      - name: Instance Configuration
+        description: Basic settings for the Filestore instance.
+        variables:
+          - name
+          - location
+          - labels
+      - name: Storage Configuration
+        description: Settings for the Lustre file share.
+        variables:
+          - file_share_name
+          - capacity_gib
+      - name: Network Configuration
+        description: VPC network settings for the instance.
+        variables:
+          - project_id
+          - network_name
+          - connect_mode
+    # Lists the outputs of the blueprint.
+    outputs:
+      - name: id
+        description: The unique identifier for the Lustre instance, in the format `projects/{{project}}/locations/{{location}}/instances/{{name}}`.
+      - name: name
+        description: The name of the Lustre instance.
+      - name: create_time
+        description: The time when the Lustre instance was created.
+      - name: state
+        description: The current state of the Lustre instance.
+      - name: access_points
+        description: A list of IP addresses of the Lustre instance's access points.
+      - name: instance
+        description: The full Lustre instance resource object.
+  # Defines the prerequisites for deploying the blueprint.
+  requirements:
+    # GCP IAM roles required for deployment.
+    roles:
+      - level: project
+        roles:
+          - roles/file.editor
+          - roles/compute.networkUser
+          - roles/servicenetworking.serviceAgent
+    # GCP APIs that need to be enabled.
+    services:
+      - filestore.googleapis.com
+      - compute.googleapis.com
+      - servicenetworking.googleapis.com
