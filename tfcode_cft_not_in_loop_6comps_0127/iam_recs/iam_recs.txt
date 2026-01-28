@@ -1,0 +1,34 @@
+{
+  "resourceRoles": [
+    {
+      "resourceName": "projects/gcp-project",
+      "roles": [
+        {
+          "name": "roles/file.editor",
+          "permissions": [
+            "file.instances.delete",
+            "file.instances.get",
+            "file.operations.get",
+            "file.instances.create"
+          ]
+        },
+        {
+          "name": "roles/iam.serviceAccountUser",
+          "permissions": [
+            "iam.serviceAccounts.actAs"
+          ]
+        }
+      ]
+    }
+  ],
+  "[cloud_iam.policy_ai.iampolicyai.IacRolesAdditionalInfo.additional_info]": {
+    "resourceInfos": [
+      {
+        "resourceName": "projects/gcp-project",
+        "createResourceTypes": [
+          "google_filestore_instance"
+        ]
+      }
+    ]
+  }
+}
